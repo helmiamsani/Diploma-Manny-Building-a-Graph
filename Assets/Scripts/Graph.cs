@@ -8,6 +8,9 @@ public class Graph : MonoBehaviour
     Transform[] points;
     [Range(0, 5000)]
     public int resolution = 10;
+    [Range(0, 1)]
+    public int function;
+
     private void Awake()
     {
         float step = 2f / resolution;
@@ -28,12 +31,36 @@ public class Graph : MonoBehaviour
 
     private void Update()
     {
+        float t = Time.time;
+        GraphFunction f;
+        if(function == 0)
+        {
+            f = SineFunction;
+        }
+        else
+        {
+            f = MultiSineFunction;
+        }
+
         for (int i = 0; i < points.Length; i++)
         {
             Transform point = points[i];
             Vector3 position = point.localPosition;
-            position.y = Mathf.Sin(Mathf.PI * (position.x + Time.time));
+            position.y = f(position.x, t);
             point.localPosition = position;
         }
+    }
+
+    static float SineFunction(float x, float t)
+    {
+       return Mathf.Sin(Mathf.PI * (x + t));
+    }
+
+    static float MultiSineFunction(float x, float t)
+    {
+        float y = Mathf.Sin(Mathf.PI * (x + t));
+        y += Mathf.Sin(2f * Mathf.PI * (x + 2f * t)) / 2f;
+        y *= 2f / 3f;
+        return y; 
     }
 }
